@@ -1,5 +1,6 @@
 FROM amazonlinux
 
+# Install python for running the server and net-tools for modifying network config
 RUN yum install python3 net-tools -y
 
 WORKDIR /app
