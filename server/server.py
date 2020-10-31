@@ -1,4 +1,9 @@
 import socket
+import requests
+
+def get_something_from_internet():
+    r = requests.get('https://kms.us-east-1.amazonaws.com')
+    return r.text
 
 def main():
     print("Starting server...")
@@ -16,7 +21,10 @@ def main():
 
     while True: 
         c, addr = s.accept()
-        c.send(str.encode('Thank you for connecting'))
+
+        content = get_something_from_internet()
+
+        c.send(str.encode(content))
         c.close() 
 
 if __name__ == '__main__':

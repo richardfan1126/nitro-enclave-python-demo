@@ -1,7 +1,16 @@
 import sys
 import socket
+import requests
+
+def get_aws_session_token():
+    r = requests.put("http://169.254.169.254/latest/api/token", headers = {
+        "X-aws-ec2-metadata-token-ttl-seconds": "21600"
+    })
+    return r.text
 
 def main():
+    aws_token = get_aws_session_token() # Get EC2 instance profile token
+
     # Create a vsock socket object
     s = socket.socket(socket.AF_VSOCK, socket.SOCK_STREAM)
     

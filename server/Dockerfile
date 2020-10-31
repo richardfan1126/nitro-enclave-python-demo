@@ -1,9 +1,16 @@
 FROM amazonlinux
 
-RUN yum install python3 -y
+RUN yum install python3 net-tools -y
 
 WORKDIR /app
 
-COPY server.py ./
+COPY requirements.txt ./
+RUN pip3 install -r /app/requirements.txt
 
-CMD ["python3", "/app/server.py"]
+COPY server.py ./
+COPY traffic-forwarder.py ./
+COPY run.sh ./
+
+RUN chmod +x run.sh
+
+CMD ["/app/run.sh"]
