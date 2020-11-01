@@ -5,6 +5,10 @@
 
 This project showcase how we can use Python socket package to establish communication between EC2 instance and Nitro Enclave. And use a proxy to make HTTPS call from inside the enclave as usual.
 
+## Architecture
+
+See [Architecture diagram](https://github.com/richardfan1126/nitro-enclave-python-demo/blob/master/docs/architecture.md)
+
 ## Installation guide
 
 TBD
