@@ -98,7 +98,7 @@ See [Architecture diagram](https://github.com/richardfan1126/nitro-enclave-pytho
    $ pip install -r requirements.txt
    ```
 
-1. Run the client app, replace `<cid>` with the enclave CID you get in step 8
+1. Run the client app, replace `<cid>` with the enclave CID you get in step 11
 
    ```
    $ python3 client.py <cid>
