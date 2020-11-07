@@ -11,6 +11,8 @@ RUN pip3 install -r /app/requirements.txt
 COPY server.py ./
 COPY traffic-forwarder.py ./
 COPY run.sh ./
+COPY kmstool_enclave ./
+COPY libnsm.so /usr/lib64/
 
 RUN chmod +x run.sh
 

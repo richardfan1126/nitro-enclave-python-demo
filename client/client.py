@@ -2,6 +2,8 @@ import sys
 import socket
 import requests
 import json
+import base64
+import subprocess
 
 def get_aws_session_token():
     """
@@ -22,6 +24,16 @@ def get_aws_session_token():
     return credential
 
 def main():
+    # Start vsock-proxy in background process
+    vsock_proxy_process = subprocess.Popen(
+        [
+            'vsock-proxy',
+            '8000',
+            'kms.us-east-1.amazonaws.com',
+            '443'
+        ]
+    )
+
     # Get EC2 instance metedata
     credential = get_aws_session_token()
 
@@ -31,20 +43,32 @@ def main():
     # Get CID from command line parameter
     cid = int(sys.argv[1])
 
+    # Get ciphertext from shell input
+    ciphertext = sys.argv[2]
+
     # The port should match the server running in enclave
     port = 5000
 
     # Connect to the server
     s.connect((cid, port))
 
-    # Send AWS credential to the server running in enclave
-    s.send(str.encode(json.dumps(credential)))
+    # Send AWS credential and ciphertext to the server running in enclave
+    s.send(str.encode(json.dumps({
+        'credential': credential,
+        'ciphertext': ciphertext,
+    })))
     
     # receive data from the server
-    print(s.recv(1024).decode())
+    response = json.loads(s.recv(65536).decode())
+
+    plaintext = base64.b64decode(response['Plaintext']).decode()
+    print(plaintext)
 
     # close the connection 
     s.close()
+
+    # Kill the vsock-proxy
+    vsock_proxy_process.kill()
 
 if __name__ == '__main__':
     main()
