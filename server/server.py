@@ -1,30 +1,32 @@
 import socket
 import requests
 import json
-import boto3
+import subprocess
 
-def aws_api_call(credential):
+def aws_api_call(credential, ciphertext):
     """
     Make AWS API call using credential obtained from parent EC2 instance
     """
 
-    client = boto3.client(
-        'kms',
-        region_name = 'us-east-1',
-        aws_access_key_id = credential['access_key_id'],
-        aws_secret_access_key = credential['secret_access_key'],
-        aws_session_token = credential['token']
+    # Call the standalone kmstool through subprocess
+    proc = subprocess.Popen(
+        [
+            "/app/kmstool_enclave",
+            "--region", "us-east-1",
+            "--proxy-port", "8000",
+            "--aws-access-key-id", "%s" % credential['access_key_id'],
+            "--aws-secret-access-key", "%s" % credential['secret_access_key'],
+            "--aws-session-token", "%s" % credential['token'],
+            "--ciphertext", "%s" % ciphertext,
+        ],
+        stdout=subprocess.PIPE
     )
 
-    # This is just a demo API call to demonstrate that we can talk to AWS via API
-    response = client.describe_key(
-        KeyId = ''
-    )
+    result = proc.communicate()[0]
 
     # Return some data from API response
     return {
-        'KeyId': response['KeyMetadata']['KeyId'],
-        'KeyState': response['KeyMetadata']['KeyState']
+        'Plaintext': result.decode()
     }
 
 def main():
@@ -50,11 +52,14 @@ def main():
         c, addr = s.accept()
 
         # Get AWS credential sent from parent instance
-        payload = c.recv(4096)
-        credential = json.loads(payload.decode())
+        payload = c.recv(65536)
+        client_request = json.loads(payload.decode())
+
+        credential = client_request['credential']
+        ciphertext = client_request['ciphertext']
 
         # Get data from AWS API call
-        content = aws_api_call(credential)
+        content = aws_api_call(credential, ciphertext)
 
         # Send the response back to parent instance
         c.send(str.encode(json.dumps(content)))
