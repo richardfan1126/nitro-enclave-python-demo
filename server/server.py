@@ -11,7 +11,7 @@ def aws_api_call(credential, ciphertext):
     # Call the standalone kmstool through subprocess
     proc = subprocess.Popen(
         [
-            "/app/kmstool_enclave",
+            "/app/kmstool_enclave_cli",
             "--region", "us-east-1",
             "--proxy-port", "8000",
             "--aws-access-key-id", "%s" % credential['access_key_id'],
@@ -42,7 +42,6 @@ def main():
     port = 5000
 
     # Bind the socket to CID and port
-
     s.bind((cid, port))
 
     # Listen for connection from client
@@ -51,7 +50,7 @@ def main():
     while True:
         c, addr = s.accept()
 
-        # Get AWS credential sent from parent instance
+        # Get data sent from parent instance
         payload = c.recv(65536)
         client_request = json.loads(payload.decode())
 
