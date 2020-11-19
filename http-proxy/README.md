@@ -127,14 +127,3 @@ See [Architecture diagram](https://github.com/richardfan1126/nitro-enclave-pytho
  - `server/run.sh`
  
    This is the bootstrap shell script. It first modify the Nitro Enclave netwrok config to assign an IP address `127.0.0.1` to local loopback. Then start the traffic forwarder and the main server app
-
-
-
-## Todos
-
- - Add implementation of attestation
- 
-License
-----
-
-Apache License, Version 2.0
