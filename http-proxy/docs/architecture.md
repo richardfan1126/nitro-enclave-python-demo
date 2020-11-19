@@ -4,7 +4,7 @@ This document shows the overall architecture and the data flow of the demo
 
 ## Diagram
 
-![Architecture](https://github.com/richardfan1126/nitro-enclave-python-demo/blob/master/docs/assets/Architecture.png)
+![Architecture](https://github.com/richardfan1126/nitro-enclave-python-demo/blob/master/http-proxy/docs/assets/Architecture.png)
 
 1. The client app grab the AWS credential from EC2 instance metadata, and send it to the server running in enclave, via the vsock
 
