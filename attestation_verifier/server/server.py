@@ -34,9 +34,6 @@ def main():
         request = json.loads(payload.decode())
 
         if request['action'] == 'connect':
-            # Get AWS credential sent from parent instance
-            credential = request['credential']
-
             # Get attestation document
             attestation_doc = nsm_util.get_attestation_doc()
 
