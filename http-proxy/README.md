@@ -1,5 +1,5 @@
 
-# AWS Nitro Enclaves Python demo
+# AWS Nitro Enclaves Python demo - HTTP Proxy
 
 **WARNING: This project is just proof-of-concept, not production-ready, use at your own risk.**
 
@@ -7,7 +7,7 @@ This project showcase how we can use Python socket package to establish communic
 
 ## Architecture
 
-See [Architecture diagram](https://github.com/richardfan1126/nitro-enclave-python-demo/blob/master/docs/architecture.md)
+See [Architecture diagram](https://github.com/richardfan1126/nitro-enclave-python-demo/blob/master/http-proxy/docs/architecture.md)
 
 ## Installation guide
 
@@ -56,7 +56,7 @@ See [Architecture diagram](https://github.com/richardfan1126/nitro-enclave-pytho
 
    If you don't have Customer Managed Key, just pick one AWS managed key. It's just for demo purpose
 
-1. Edit `server/server.py`, paste the Key ID into the following line
+1. Edit `http-proxy/server/server.py`, paste the Key ID into the following line
 
    ```
    def aws_api_call(credential):
@@ -69,7 +69,7 @@ See [Architecture diagram](https://github.com/richardfan1126/nitro-enclave-pytho
 1. Use the build script to build and run the enclave image
 
    ```
-   $ cd nitro-enclave-python-demo/server
+   $ cd nitro-enclave-python-demo/http-proxy/server
    $ chmod +x build.sh
    $ ./build.sh
    ```
@@ -92,7 +92,7 @@ See [Architecture diagram](https://github.com/richardfan1126/nitro-enclave-pytho
 
    ```
    $ yum install python3 -y
-   $ cd nitro-enclave-python-demo/client
+   $ cd nitro-enclave-python-demo/http-proxy/client
    $ python3 -m venv venv
    $ source venv/bin/activate
    $ pip install -r requirements.txt
