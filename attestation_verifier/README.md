@@ -57,6 +57,7 @@ See [Architecture diagram](https://github.com/richardfan1126/nitro-enclave-pytho
    ```
 
 1. After the image is built, you can find the measurement of it
+
    Find the following line, and take note the `PCR0` value
 
    ```
