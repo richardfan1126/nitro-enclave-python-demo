@@ -1,3 +1,7 @@
+"""
+This file is modified based on donkersgoed's repository (https://github.com/donkersgoed/nitropepper-enclave-app)
+"""
+
 import base64
 
 import Crypto
