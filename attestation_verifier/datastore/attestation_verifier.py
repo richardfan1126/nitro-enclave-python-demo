@@ -111,7 +111,6 @@ def encrypt(attestation_doc, plaintext):
 
     # Get the public key from attestation document
     public_key_byte = doc_obj['public_key']
-    # public_key = crypto.load_publickey(crypto.FILETYPE_ASN1, public_key)
     public_key = RSA.import_key(public_key_byte)
 
     # Encrypt the plaintext with the public key and encode the cipher text in base64
