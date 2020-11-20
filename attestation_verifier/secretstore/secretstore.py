@@ -21,7 +21,7 @@ def main():
     # Listen for connection from enclave server
     s.listen()
 
-    print("Datastore running...")
+    print("SecretStore running...")
 
     while True:
         c, addr = s.accept()

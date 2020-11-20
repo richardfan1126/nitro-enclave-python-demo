@@ -39,34 +39,34 @@ def main():
             # Base64 encode the attestation doc
             attestation_doc_b64 = base64.b64encode(attestation_doc).decode()
 
-            # Create a vsock socket object for connection to datastore
-            datastore_socket = socket.socket(socket.AF_VSOCK, socket.SOCK_STREAM)
+            # Create a vsock socket object for connection to secretstore
+            secretstore_socket = socket.socket(socket.AF_VSOCK, socket.SOCK_STREAM)
             
             # Parent CID is always 3
-            datastore_cid = 3
+            secretstore_cid = 3
 
-            # The port should match the datastore
-            data_store_port = 6000
+            # The port should match the secretstore
+            secretstore_port = 6000
 
             # Connect to the server
-            datastore_socket.connect((datastore_cid, data_store_port))
+            secretstore_socket.connect((secretstore_cid, secretstore_port))
 
             # Generate JSON response
-            datastore_request = json.dumps({
+            secretstore_request = json.dumps({
                 'attestation_doc_b64': attestation_doc_b64
             })
 
-            # Send the attestation document to datastore
-            datastore_socket.send(str.encode(datastore_request))
+            # Send the attestation document to secretstore
+            secretstore_socket.send(str.encode(secretstore_request))
 
-            # Receive response from datastore
-            datastore_response = datastore_socket.recv(65536)
-            datastore_response_obj = json.loads(datastore_response.decode())
+            # Receive response from secretstore
+            secretstore_response = secretstore_socket.recv(65536)
+            secretstore_response_obj = json.loads(secretstore_response.decode())
 
-            # Check if datastore request succeed
-            if datastore_response_obj['success']:
+            # Check if secretstore request succeed
+            if secretstore_response_obj['success']:
                 # Decode the base64 ciphertext
-                ciphertext_b64 = datastore_response_obj['ciphertext_b64']
+                ciphertext_b64 = secretstore_response_obj['ciphertext_b64']
                 ciphertext = base64.b64decode(ciphertext_b64)
 
                 # Decrypt ciphertext using private key
@@ -76,11 +76,11 @@ def main():
                 client_connection.sendall(str.encode(plaintext))
             else:
                 # Send the error message to client
-                err_msg = datastore_response_obj['error']
+                err_msg = secretstore_response_obj['error']
                 client_connection.sendall(str.encode(err_msg))
 
-            # Close connection with datastore
-            datastore_socket.close()
+            # Close connection with secretstore
+            secretstore_socket.close()
 
         # Close the connection with client
         client_connection.close()
