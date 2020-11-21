@@ -33,7 +33,7 @@ def main():
         request = json.loads(payload.decode())
 
         if request['action'] == 'connect':
-            # Get attestation document
+            # Generate attestation document
             attestation_doc = nsm_util.get_attestation_doc()
 
             # Base64 encode the attestation doc
@@ -51,12 +51,12 @@ def main():
             # Connect to the server
             secretstore_socket.connect((secretstore_cid, secretstore_port))
 
-            # Generate JSON response
+            # Generate JSON request
             secretstore_request = json.dumps({
                 'attestation_doc_b64': attestation_doc_b64
             })
 
-            # Send the attestation document to secretstore
+            # Send the request to secretstore
             secretstore_socket.send(str.encode(secretstore_request))
 
             # Receive response from secretstore

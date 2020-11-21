@@ -51,8 +51,11 @@ def main():
                 'error': str(e)
             }
         else:
+            # This is the secret requested
+            secret = "Hello World"
+
             # Generate encrypted response using public key in attestation document
-            ciphertext_b64 = encrypt(attestation_doc, "Hello World")
+            ciphertext_b64 = encrypt(attestation_doc, secret)
 
             # Send the result back to enclave
             response_to_enclave = {
