@@ -3,10 +3,11 @@ This file is modified based on donkersgoed's repository (https://github.com/donk
 """
 
 import base64
+import json
 
 import Crypto
 from Crypto.PublicKey import RSA
-from Crypto.Cipher import PKCS1_OAEP
+from Crypto.Cipher import PKCS1_OAEP, AES
 
 import libnsm
 
@@ -43,12 +44,31 @@ class NSMUtil():
         )
         return libnsm_att_doc_cose_signed
     
-    def decrypt(self, ciphertext):
+    def decrypt(self, ciphertext_bundle):
         """
         Decrypt ciphertext using private key
         """
-        cipher = PKCS1_OAEP.new(self._rsa_key)
-        plaintext = cipher.decrypt(ciphertext)
+
+        private_key = self._rsa_key
+        ciphertext_bundle = json.loads(ciphertext_bundle)
+
+        enc_session_key = ciphertext_bundle[0]
+        nonce = ciphertext_bundle[1]
+        tag = ciphertext_bundle[2]
+        ciphertext = ciphertext_bundle[3]
+
+        enc_session_key = base64.b64decode(enc_session_key)
+        nonce = base64.b64decode(nonce)
+        tag = base64.b64decode(tag)
+        ciphertext = base64.b64decode(ciphertext)
+
+        # Decrypt the session key with the private RSA key
+        cipher_rsa = PKCS1_OAEP.new(private_key)
+        session_key = cipher_rsa.decrypt(enc_session_key)
+
+        # Decrypt the data with the AES session key
+        cipher_aes = AES.new(session_key, AES.MODE_EAX, nonce)
+        plaintext = cipher_aes.decrypt_and_verify(ciphertext, tag)
 
         return plaintext.decode()
 

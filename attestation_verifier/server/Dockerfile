@@ -12,6 +12,7 @@ COPY server.py ./
 COPY NsmUtil.py ./
 COPY run.sh ./
 COPY libnsm.so ./
+COPY traffic-forwarder.py ./
 
 RUN chmod +x run.sh
 

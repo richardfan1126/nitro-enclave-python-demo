@@ -3,3 +3,5 @@ cose==0.9.dev2
 cryptography==3.3.2
 pycryptodome==3.9.9
 pyOpenSSL==19.1.0
+fastapi==0.85.0
+uvicorn[standard]==0.18.3

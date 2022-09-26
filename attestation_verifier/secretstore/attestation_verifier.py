@@ -1,12 +1,14 @@
 import cbor2
 import cose
 import base64
+import json
 
 from cose import EC2, CoseAlgorithms, CoseEllipticCurves
 from Crypto.Util.number import long_to_bytes
+from Crypto.Random import get_random_bytes
 from OpenSSL import crypto
 
-from Crypto.Cipher import PKCS1_OAEP
+from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.PublicKey import RSA
 
 
@@ -24,6 +26,8 @@ def verify_attestation_doc(attestation_doc, pcrs = [], root_cert_pem = None):
 
     # Get PCRs from attestation document
     document_pcrs_arr = doc_obj['pcrs']
+
+    print("Received request from enclave with PCR0: {}".format(document_pcrs_arr[0].hex()))
 
     ###########################
     # Part 1: Validating PCRs #
@@ -113,8 +117,22 @@ def encrypt(attestation_doc, plaintext):
     public_key_byte = doc_obj['public_key']
     public_key = RSA.import_key(public_key_byte)
 
-    # Encrypt the plaintext with the public key and encode the cipher text in base64
-    cipher = PKCS1_OAEP.new(public_key)
-    ciphertext = cipher.encrypt(str.encode(plaintext))
+    # Generate a random session for data encryption
+    session_key = get_random_bytes(16)
 
-    return base64.b64encode(ciphertext).decode()
+    # Encrypt the session key with the public RSA key
+    cipher_rsa = PKCS1_OAEP.new(public_key)
+    enc_session_key = cipher_rsa.encrypt(session_key)
+
+    # Encrypt the data with the AES session key
+    cipher_aes = AES.new(session_key, AES.MODE_EAX)
+    ciphertext, tag = cipher_aes.encrypt_and_digest(str.encode(plaintext))
+
+    # Return the encrypted session key, nonce, tag and ciphertext
+    return json.dumps([
+        base64.b64encode(enc_session_key).decode(),
+        base64.b64encode(cipher_aes.nonce).decode(),
+        base64.b64encode(tag).decode(),
+        base64.b64encode(ciphertext).decode()
+    ])
+
