@@ -38,6 +38,8 @@ async def root(item: Item):
     return response
 
 def main(attestation_doc_b64):
+    print(attestation_doc_b64)
+
     attestation_doc = base64.b64decode(attestation_doc_b64)
 
     # Get the root cert PEM content
@@ -48,8 +50,12 @@ def main(attestation_doc_b64):
     pcr0 = os.environ.get("PCR0")
 
     # Verify attestation document
+    pcrs = {
+        0: pcr0
+    }
+
     try:
-        verify_attestation_doc(attestation_doc, pcrs = [pcr0], root_cert_pem = root_cert_pem)
+        verify_attestation_doc(attestation_doc, pcrs = pcrs, root_cert_pem = root_cert_pem)
     except Exception as e:
         # Send error response back to enclave
         response_to_enclave = {
