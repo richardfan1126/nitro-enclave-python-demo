@@ -22,7 +22,13 @@ def main():
 
     # receive the plaintext from the server and print it to console
     response = s.recv(65536)
-    print(response.decode())
+    response = response.decode()
+
+    try:
+        response = json.loads(response)
+        print(json.dumps(response, indent = 4))
+    except:
+        print(response)
 
     # close the connection 
     s.close()
