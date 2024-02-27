@@ -10,6 +10,7 @@ from OpenSSL import crypto
 
 from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.PublicKey import RSA
+from Crypto.Hash import SHA256
 
 
 def verify_attestation_doc(attestation_doc, pcrs = {}, root_cert_pem = None):
@@ -122,17 +123,16 @@ def encrypt(attestation_doc, plaintext):
     session_key = get_random_bytes(16)
 
     # Encrypt the session key with the public RSA key
-    cipher_rsa = PKCS1_OAEP.new(public_key)
+    cipher_rsa = PKCS1_OAEP.new(public_key, SHA256)
     enc_session_key = cipher_rsa.encrypt(session_key)
 
     # Encrypt the data with the AES session key
-    cipher_aes = AES.new(session_key, AES.MODE_EAX)
-    ciphertext, tag = cipher_aes.encrypt_and_digest(str.encode(plaintext))
+    cipher_aes = AES.new(session_key, AES.MODE_GCM)
+    ciphertext = cipher_aes.encrypt(str.encode(plaintext))
 
     # Return the encrypted session key, nonce, tag and ciphertext
     return json.dumps([
         base64.b64encode(enc_session_key).decode(),
         base64.b64encode(cipher_aes.nonce).decode(),
-        base64.b64encode(tag).decode(),
         base64.b64encode(ciphertext).decode()
     ])

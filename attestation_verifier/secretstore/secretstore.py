@@ -71,8 +71,7 @@ def main(attestation_doc_b64):
 
         # Send the result back to enclave
         response_to_enclave = {
-            'success': True,
-            'ciphertext_bundle': ciphertext_bundle
+            'encrypted_secret': ciphertext_bundle
         }
 
     return response_to_enclave
