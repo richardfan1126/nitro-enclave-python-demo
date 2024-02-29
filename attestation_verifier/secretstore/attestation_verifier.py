@@ -120,19 +120,20 @@ def encrypt(attestation_doc, plaintext):
     public_key = RSA.import_key(public_key_byte)
 
     # Generate a random session for data encryption
-    session_key = get_random_bytes(16)
+    session_key = get_random_bytes(32)
 
     # Encrypt the session key with the public RSA key
     cipher_rsa = PKCS1_OAEP.new(public_key, SHA256)
     enc_session_key = cipher_rsa.encrypt(session_key)
 
     # Encrypt the data with the AES session key
-    cipher_aes = AES.new(session_key, AES.MODE_GCM)
-    ciphertext = cipher_aes.encrypt(str.encode(plaintext))
+    nonce = get_random_bytes(12)
+    cipher_aes = AES.new(session_key, AES.MODE_GCM, nonce = nonce)
+    ciphertext, digest = cipher_aes.encrypt_and_digest(str.encode(plaintext))
 
     # Return the encrypted session key, nonce, tag and ciphertext
-    return json.dumps([
+    return "{}:{}:{}".format(
         base64.b64encode(enc_session_key).decode(),
         base64.b64encode(cipher_aes.nonce).decode(),
-        base64.b64encode(ciphertext).decode()
-    ])
+        base64.b64encode(ciphertext + digest).decode(),
+    )
