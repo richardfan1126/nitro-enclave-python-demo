@@ -1,5 +1,5 @@
 cbor2==5.2.0
 cose==0.9.dev2
-cryptography==42.0.4
+cryptography==43.0.1
 pycryptodome==3.19.1
 pyOpenSSL==19.1.0
